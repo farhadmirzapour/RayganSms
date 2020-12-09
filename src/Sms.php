@@ -85,24 +85,18 @@ class Sms
      */
     public function sendAuthCode($reciver_number, $text_message = null, $autoGenerateCode = true)
     {
-        if ($autoGenerateCode) {
-            $params = [
-                'UserName' => $this->user_name,
-                'Password' => $this->password,
-                'Mobile'   => $reciver_number,
-                'Footer'   => $text_message,
-            ];
-            $response = $this->client->request('POST', $this->url_send_auto_auth_code, ['form_params' => $params]);
-        } else {
-            $params = [
-                'UserName' => $this->user_name,
-                'Password' => $this->password,
-                'Mobile'   => $reciver_number,
-                'Message'  => $text_message,
-            ];
+        $params = [
+            'UserName' => $this->user_name,
+            'Password' => $this->password,
+            'Mobile'   => $reciver_number,
+            'Message'  => $text_message,
+        ];
 
-            $response = $this->client->request('GET', $this->url_send_auth_code, ['query' => $params]);
-        }
+        $requestType = $autoGenerateCode ? "POST" : "GET";
+
+        $key =  $autoGenerateCode ? "form_params" : "query";
+
+        $response = $this->client->request($requestType, $this->url_send_auto_auth_code, [$key => $params]);
 
         $response = \json_decode((string) $response->getBody(), true);
 
